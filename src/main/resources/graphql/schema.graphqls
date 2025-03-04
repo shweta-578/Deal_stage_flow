@@ -1,0 +1,83 @@
+type Deal {
+    id: ID!
+    dealName: String!
+    amount: Float!
+    pipeline: Pipeline
+    stage: PipelineStage
+    quotes :[Quote]
+}
+type Pipeline {
+    id: ID!
+    name: String!
+    type: PipelineType!
+    stages: [PipelineStage!]!
+}
+type Quote {
+    id: ID!
+    currentState: QuoteState!
+    lineItems: [String!]!
+    deal: Deal!
+}
+enum PipelineType {
+    SALES
+    ECOMMERCE
+}
+enum QuoteState {
+    DRAFT
+    PUBLISHED
+    COMPLETED
+    ARCHIVED
+    DELETED
+    EXPIRED
+}
+
+enum PipelineStage {
+    # 🛒 E-commerce Pipeline Stages
+    CHECKOUT_ABANDONED
+    CHECKOUT_PENDING
+    CHECKOUT_COMPLETED
+    PROCESSED
+    SHIPPED
+    CANCELLED
+
+    # 💼 Sales Pipeline Stages
+    APPOINTMENT_SCHEDULED
+    QUALIFIED_TO_BUY
+    PRESENTATION_SCHEDULED
+    DECISION_MAKER_BOUGHT_IN
+    CONTRACT_SENT
+    CLOSED_WON
+    CLOSED_LOST
+}
+type Query {
+    getAllQuotes: [Quote!]!
+    getQuoteById(id: ID!): Quote
+    getQuotesByDeal(dealId: ID!): [Quote!]!
+    getAllPipelines: [Pipeline]
+    getPipelineById(id: ID!): Pipeline
+    getAllDeals:[Deal]
+}
+
+type Mutation {
+    createQuote(dealId: ID, lineItems: [String!]!): Quote
+    updateQuote(id: ID!, lineItems: [String!], currentState: QuoteState): Quote
+    deleteQuote(id: ID!): Boolean
+
+    publishQuote(id: ID!): Quote
+    completeQuote(id: ID!): Quote
+    archiveQuote(id: ID!): Quote
+    deleteQuotePermanently(id: ID!): Boolean
+    expireQuote(id: ID!): Quote
+
+    createPipeline(name: String!, type: PipelineType!, stages: [PipelineStage!]!): Pipeline
+    updatePipeline(id: ID!, name: String, type: PipelineType, stages: [PipelineStage]): Pipeline
+    deletePipeline(id: ID!): Boolean
+
+    createDeal(dealName: String!, amount: Float!, pipelineId: ID, stage: String): Deal
+    updateStage(id: ID!, newStage: String!): Deal
+    createOrUpdateDeal(id: ID ,stage: PipelineStage, pipelineId:ID,amount: Float ,dealName:String): Deal!
+    associateQuoteWithDeal(quoteId: ID!dealId: ID!): Quote!
+}
+
+
+
